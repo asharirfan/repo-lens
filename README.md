@@ -1,4 +1,4 @@
-# repo-lens
+# repolens
 
 A fast, extensible CLI tool for analyzing any local or remote GitHub repository — understand architecture, stack, and dependencies in seconds.
 
@@ -18,13 +18,13 @@ A fast, extensible CLI tool for analyzing any local or remote GitHub repository 
 ## Install
 
 ```bash
-pnpm install -g repo-lens
+pnpm install -g @asharirfan/repolens
 ```
 
 Or run without installing:
 
 ```bash
-npx repo-lens analyze <repo>
+npx @asharirfan/repolens analyze <repo>
 ```
 
 **Requirements:** Node.js ≥ 18.0.0
@@ -33,25 +33,25 @@ npx repo-lens analyze <repo>
 
 ```bash
 # Analyze a GitHub repository
-repo-lens analyze https://github.com/vercel/next.js
+repolens analyze https://github.com/vercel/next.js
 
 # Analyze a local folder
-repo-lens analyze ./my-project
+repolens analyze ./my-project
 
 # Output as JSON
-repo-lens analyze https://github.com/fastapi/fastapi --json
+repolens analyze https://github.com/fastapi/fastapi --json
 
 # Generate a Markdown report
-repo-lens analyze https://github.com/supabase/supabase --markdown
+repolens analyze https://github.com/supabase/supabase --markdown
 
 # Save JSON to a specific file
-repo-lens analyze ./my-project --json --output analysis.json
+repolens analyze ./my-project --json --output analysis.json
 ```
 
 ## CLI Reference
 
 ```
-Usage: repo-lens analyze <repo> [options]
+Usage: repolens analyze <repo> [options]
 
 Arguments:
   repo                  Local path or GitHub URL to analyze
@@ -109,7 +109,7 @@ Options:
       ├── react ^18.0.0
       └── react-dom ^18.0.0
 
-  Analyzed 4821 files in 1243ms · repo-lens v0.0.1
+  Analyzed 4821 files in 1243ms · repolens v0.0.1
 ```
 
 ### `fastapi/fastapi`
@@ -224,7 +224,7 @@ No other files need to change.
 ## Architecture
 
 ```
-repo-lens analyze <repo>
+repolens analyze <repo>
         │
         ▼
 1. URL/Path Resolution
@@ -297,7 +297,7 @@ For bugs, open an issue with the command you ran, the repo you analyzed, and the
 
 ```bash
 export GITHUB_TOKEN=ghp_your_token_here
-repo-lens analyze https://github.com/your-org/private-repo
+repolens analyze https://github.com/your-org/private-repo
 ```
 
 ## Stack
