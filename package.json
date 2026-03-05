@@ -1,6 +1,6 @@
 {
   "name": "@asharirfan/repolens",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Analyze any local or remote GitHub repository and generate a clear overview of its architecture, dependencies, and structure.",
   "type": "module",
   "bin": {
