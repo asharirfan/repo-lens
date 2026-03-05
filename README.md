@@ -1,69 +1,64 @@
-# RepoLens
+# repo-lens
 
-> Instantly understand any codebase. Analyze local or remote GitHub repositories and get a clear overview of architecture, dependencies, and structure.
+A fast, extensible CLI tool for analyzing any local or remote GitHub repository — understand architecture, stack, and dependencies in seconds.
 
-[![npm version](https://img.shields.io/npm/v/repolens?style=flat-square)](https://www.npmjs.com/package/repolens)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-67%20passing-brightgreen?style=flat-square)](#)
-[![pnpm](https://img.shields.io/badge/pnpm-workspace-orange?style=flat-square)](https://pnpm.io/)
+## Features
 
----
+- **GitHub & local support** — pass a GitHub URL or a local folder path.
+- **Stack detection** — identifies Node.js, Next.js, React, Vue, Python, FastAPI, Django, Go, Rust, Docker, Tailwind, PostgreSQL, MongoDB, and more.
+- **Dependency analysis** — parses `package.json`, `requirements.txt`, `go.mod`, and `Cargo.toml`.
+- **Structure analysis** — detects entry points, module boundaries, test directories, and config files.
+- **Architecture summary** — generates a human-readable prose summary of the codebase.
+- **ASCII dependency diagram** — visual tree of stacks, folders, and dependencies.
+- **Three output formats** — rich CLI output, JSON, and Markdown report.
+- **Extensible analyzer system** — add a new language by implementing one interface in one file.
+- **Auto-cleanup** — GitHub repos are cloned to a temp dir and deleted after analysis, even on error.
+- **TypeScript strict mode** — `strict: true`, zero `any`.
 
-## What is RepoLens?
-
-RepoLens is a production-quality CLI tool that analyzes any local or remote GitHub repository and generates a clear, structured overview of its architecture, technology stack, dependencies, and folder structure. It helps developers quickly understand unfamiliar codebases without having to manually dig through files.
-
-Point it at a GitHub URL or a local folder — RepoLens does the rest.
-
----
-
-## Installation
+## Install
 
 ```bash
-# Install globally with pnpm
-pnpm install -g repolens
+pnpm install -g repo-lens
+```
 
-# Or run without installing
-npx repolens analyze <repo>
+Or run without installing:
+
+```bash
+npx repo-lens analyze <repo>
 ```
 
 **Requirements:** Node.js ≥ 18.0.0
-
----
 
 ## Quick Start
 
 ```bash
 # Analyze a GitHub repository
-repolens analyze https://github.com/vercel/next.js
+repo-lens analyze https://github.com/vercel/next.js
 
 # Analyze a local folder
-repolens analyze ./my-project
+repo-lens analyze ./my-project
 
 # Output as JSON
-repolens analyze https://github.com/fastapi/fastapi --json
+repo-lens analyze https://github.com/fastapi/fastapi --json
 
-# Generate a Markdown report (saved to repolens-report.md)
-repolens analyze https://github.com/supabase/supabase --markdown
+# Generate a Markdown report
+repo-lens analyze https://github.com/supabase/supabase --markdown
 
 # Save JSON to a specific file
-repolens analyze ./my-project --json --output analysis.json
+repo-lens analyze ./my-project --json --output analysis.json
 ```
-
----
 
 ## CLI Reference
 
 ```
-Usage: repolens analyze <repo> [options]
+Usage: repo-lens analyze <repo> [options]
 
 Arguments:
   repo                  Local path or GitHub URL to analyze
 
 Options:
   --json                Output results as JSON
-  --markdown            Generate a Markdown report (saved to repolens-report.md)
+  --markdown            Generate a Markdown report
   --output <file>       Write output to a specific file
   --silent              Suppress all non-essential output
   --verbose             Enable verbose/debug output
@@ -71,9 +66,7 @@ Options:
   -h, --help            Display help
 ```
 
----
-
-## Example Outputs
+## Example Output
 
 ### `vercel/next.js`
 
@@ -96,9 +89,9 @@ Options:
 
   Architecture Summary
   ────────────────────────────────────────
-  This repository appears to be a Node.js project. It uses Next.js, React as
-  the primary frameworks. The codebase is written in TypeScript. Tailwind CSS
-  is used for styling. Tests are located in: test.
+  This repository appears to be a Node.js project. It uses Next.js and React
+  as the primary frameworks. The codebase is written in TypeScript. Tailwind
+  CSS is used for styling. Tests are located in: test.
 
   Dependency Diagram
   ────────────────────────────────────────
@@ -116,7 +109,7 @@ Options:
       ├── react ^18.0.0
       └── react-dom ^18.0.0
 
-  Analyzed 4821 files in 1243ms · repolens v0.1.0
+  Analyzed 4821 files in 1243ms · repo-lens v0.0.1
 ```
 
 ### `fastapi/fastapi`
@@ -126,7 +119,6 @@ Options:
 │                                      │
 │   RepoLens Analysis                  │
 │   fastapi/fastapi                    │
-│   FastAPI framework, high performance │
 │                                      │
 ╰──────────────────────────────────────╯
 
@@ -142,7 +134,7 @@ Options:
   Tests are located in: tests.
 ```
 
-### `supabase/supabase` (JSON output)
+### `supabase/supabase` — JSON output
 
 ```json
 {
@@ -163,8 +155,6 @@ Options:
 }
 ```
 
----
-
 ## Supported Stacks
 
 | Technology   | Detection Signal                                  |
@@ -184,77 +174,9 @@ Options:
 | PostgreSQL   | `pg`, `psycopg2`, `lib/pq` in dependencies        |
 | MongoDB      | `mongoose`, `pymongo` in dependencies             |
 
----
+## Extending
 
-## Architecture
-
-RepoLens follows a clean **plugin + pipeline** architecture:
-
-```
-repolens analyze <repo>
-        │
-        ▼
-1. URL/Path Resolution
-   isGitHubUrl? → clone to temp dir (simple-git)
-   local path?  → resolve directly
-        │
-        ▼
-2. File Scanner
-   glob all files, respect .gitignore, skip node_modules
-        │
-        ▼
-3. Structure Scanner
-   detect entry points, folders, test dirs, config files
-        │
-        ▼
-4. Dependency Scanner + Parsers
-   find package.json / requirements.txt / go.mod / Cargo.toml
-   parse each into typed DependencyGroup[]
-        │
-        ▼
-5. Analyzer Registry (plugin system)
-   each IAnalyzer.canAnalyze() → run matching analyzers
-   NodeAnalyzer / PythonAnalyzer / GoAnalyzer / RustAnalyzer / DockerAnalyzer
-        │
-        ▼
-6. Architecture Summary Generator
-   synthesize notes from all analyzers into prose
-        │
-        ▼
-7. Diagram Generator
-   ASCII dependency tree
-        │
-        ▼
-8. Output Formatter
-   CLI (boxen + chalk + cli-table3)
-   JSON (JSON.stringify)
-   Markdown (GFM with badges + tables)
-        │
-        ▼
-9. Cleanup (always runs, even on error)
-   remove temp clone directory
-```
-
-### Module Structure
-
-```
-src/
-├── cli/              # Commander.js entry point + command handlers
-├── models/           # Pure TypeScript interfaces (no logic)
-├── analyzers/        # IAnalyzer interface + per-stack implementations
-│   └── base/         # BaseAnalyzer abstract class
-├── scanners/         # File system traversal and structure detection
-├── parsers/          # Dependency file parsers (package.json, go.mod, etc.)
-├── services/         # Git cloning + GitHub API integration
-├── utils/            # Logger, file utils, URL utils, temp dir
-└── output/           # CLI, JSON, Markdown formatters + diagram generator
-```
-
----
-
-## Extending RepoLens
-
-Adding support for a new language or framework takes one file. Implement the `IAnalyzer` interface:
+Adding a new language takes one file. Implement `IAnalyzer`:
 
 ```typescript
 // src/analyzers/dartAnalyzer.ts
@@ -271,21 +193,19 @@ export class DartAnalyzer extends BaseAnalyzer {
 
   async analyze(repoPath: string, files: string[]): Promise<AnalyzerResult> {
     const result = this.emptyResult();
-
     result.stacks.push({
-      name: 'dart', // extend StackName in models/StackInfo.ts
+      name: 'dart',
       displayName: 'Dart',
       confidence: 'high',
       evidence: ['pubspec.yaml found'],
     });
-
     result.architectureNotes.push('This is a Dart/Flutter project.');
     return result;
   }
 }
 ```
 
-Then register it in `src/analyzers/index.ts`:
+Register it in `src/analyzers/index.ts`:
 
 ```typescript
 import { DartAnalyzer } from './dartAnalyzer.js';
@@ -299,90 +219,98 @@ export function createDefaultRegistry(): AnalyzerRegistry {
 }
 ```
 
-That's it. No other files need to change.
+No other files need to change.
 
----
+## Architecture
 
-## Development
-
-```bash
-# Clone the repo
-git clone https://github.com/repolens/repolens.git
-cd repolens
-
-# Install dependencies
-pnpm install
-
-# Run in dev mode (no build needed)
-pnpm dev analyze ./some-project
-
-# Run tests
-pnpm test
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Type check
-pnpm typecheck
-
-# Lint
-pnpm lint
-
-# Format
-pnpm format
-
-# Build for production
-pnpm build
+```
+repo-lens analyze <repo>
+        │
+        ▼
+1. URL/Path Resolution
+   isGitHubUrl? → shallow clone to temp dir (simple-git)
+   local path?  → resolve directly
+        │
+        ▼
+2. File Scanner        glob all files, skip node_modules/dist
+3. Structure Scanner   entry points, folders, test dirs, config files
+4. Dependency Parsers  package.json / requirements.txt / go.mod / Cargo.toml
+        │
+        ▼
+5. Analyzer Registry (plugin system)
+   NodeAnalyzer / PythonAnalyzer / GoAnalyzer / RustAnalyzer / DockerAnalyzer
+        │
+        ▼
+6. Architecture Summary + ASCII Diagram
+        │
+        ▼
+7. Output  →  CLI  |  JSON  |  Markdown
+        │
+        ▼
+8. Cleanup (always runs, even on error)
 ```
 
----
+### Module Structure
+
+```
+src/
+├── cli/          Commander.js entry point + command handlers
+├── models/       Pure TypeScript interfaces (no logic)
+├── analyzers/    IAnalyzer interface + per-stack implementations
+├── scanners/     File system traversal and structure detection
+├── parsers/      Dependency file parsers
+├── services/     Git cloning + GitHub API (Octokit)
+├── utils/        Logger, file utils, URL utils, temp dir
+└── output/       CLI, JSON, Markdown formatters + diagram generator
+```
+
+## Dev
+
+```bash
+pnpm install
+pnpm dev analyze ./some-project   # run without building
+pnpm test                         # vitest
+pnpm test:coverage
+pnpm typecheck                    # tsc --noEmit
+pnpm lint
+pnpm format
+pnpm build                        # tsup → dist/
+```
 
 ## Contributing
 
-Contributions are welcome! Here's how to get started:
+1. Fork the repo
+2. Create a branch: `git checkout -b feat/my-new-analyzer`
+3. Make your changes and add tests
+4. Run `pnpm typecheck && pnpm test && pnpm build`
+5. Open a Pull Request
 
-1. **Fork** the repository
-2. **Create a branch**: `git checkout -b feat/my-new-analyzer`
-3. **Make your changes** — follow the existing patterns
-4. **Add tests** — all new analyzers/parsers need unit tests
-5. **Run the full suite**: `pnpm typecheck && pnpm test && pnpm build`
-6. **Open a Pull Request** with a clear description
+New analyzers must implement `IAnalyzer` and be registered in `src/analyzers/index.ts`. New parsers must be added to `src/parsers/index.ts`.
 
-### Guidelines
-
-- Follow the existing TypeScript patterns (strict mode, no `any`)
-- New analyzers must implement `IAnalyzer` and be registered in `src/analyzers/index.ts`
-- New parsers must be added to `src/parsers/index.ts`
-- All public-facing changes should update this README
-- Keep PRs focused — one feature or fix per PR
-
-### Reporting Issues
-
-Please open a GitHub issue with:
-
-- The command you ran
-- The repository you were analyzing (if public)
-- The full error output (use `--verbose` for more detail)
-
----
+For bugs, open an issue with the command you ran, the repo you analyzed, and the full error output (`--verbose` for stack traces).
 
 ## Environment Variables
 
-| Variable       | Description                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------ |
-| `GITHUB_TOKEN` | Optional GitHub personal access token. Increases API rate limits and enables private repo metadata fetching. |
+| Variable       | Description                                                                                         |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| `GITHUB_TOKEN` | Optional GitHub personal access token. Increases API rate limits and enables private repo metadata. |
 
 ```bash
 export GITHUB_TOKEN=ghp_your_token_here
-repolens analyze https://github.com/your-org/private-repo
+repo-lens analyze https://github.com/your-org/private-repo
 ```
 
----
+## Stack
+
+- TypeScript (strict mode)
+- Commander.js (CLI)
+- picocolors + boxen + ora (terminal output)
+- simple-git (cloning)
+- @octokit/rest (GitHub API)
+- Vitest (tests)
+- tsup (bundling)
+- pnpm (package manager)
 
 ## License
 
-MIT © RepoLens Contributors
-
----
-
-_Built with TypeScript, Commander.js, chalk, ora, boxen, simple-git, and @octokit/rest._
+Apache-2.0 © [Ashar Irfan](https://x.com/MrAsharIrfan) built with [Command Code](https://commandcode.ai).

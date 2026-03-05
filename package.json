@@ -29,8 +29,8 @@
     "code-analysis",
     "github"
   ],
-  "author": "RepoLens Contributors",
-  "license": "MIT",
+  "author": "Ashar Irfan",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/repolens/repolens.git"
