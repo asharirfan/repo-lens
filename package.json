@@ -1,6 +1,6 @@
 {
   "name": "@asharirfan/repolens",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Analyze any local or remote GitHub repository and generate a clear overview of its architecture, dependencies, and structure.",
   "type": "module",
   "bin": {
@@ -63,6 +63,8 @@
     "vitest": "^2.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
