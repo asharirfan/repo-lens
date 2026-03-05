@@ -1,10 +1,10 @@
 {
-  "name": "repo-lens",
+  "name": "@asharirfan/repolens",
   "version": "0.0.1",
   "description": "Analyze any local or remote GitHub repository and generate a clear overview of its architecture, dependencies, and structure.",
   "type": "module",
   "bin": {
-    "repo-lens": "./dist/index.js"
+    "repolens": "./dist/index.js"
   },
   "scripts": {
     "build": "tsup",

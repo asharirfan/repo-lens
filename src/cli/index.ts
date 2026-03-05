@@ -21,7 +21,7 @@ function getVersion(): string {
 const program = new Command();
 
 program
-  .name('repo-lens')
+  .name('repolens')
   .description('Analyze any local or remote GitHub repository and generate a clear architecture overview.')
   .version(getVersion(), '-v, --version', 'Output the current version');
 
